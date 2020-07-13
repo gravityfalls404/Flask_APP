@@ -3,6 +3,7 @@ from flask import render_template, redirect, request, jsonify,make_response
 
 @app.route("/")
 def index():
+    print(app.config['DB_NAME'])
     return render_template("/public/index.html")
 
 @app.route("/about")
