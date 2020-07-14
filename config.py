@@ -25,7 +25,7 @@ class DevelopmentConfig(Config):
     DB_PASSWORD = 'example'
 
 
-    UPLOADS = '/home/oem/PycharmProjects/Flask_app'
+    UPLOADS = "/home/oem/PycharmProjects/Flask_app/app/static/img/uploads"
 
     SESSION_COOKIE_SECURE = False
 
