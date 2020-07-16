@@ -4,6 +4,8 @@ from flask import render_template, redirect, request, jsonify,make_response
 import os
 
 from werkzeug.utils import secure_filename
+from flask import send_from_directory, abort
+
 
 @app.route("/")
 def index():
@@ -153,3 +155,40 @@ def upload_image():
 
     return render_template("/public/upload_image.html")
 
+"""
+string,
+int,
+float,
+path,
+uuid
+"""
+
+app.config["CLIENT_IMAGES"]="/home/oem/PycharmProjects/Flask_app/app/static/img/"
+
+@app.route("/get-image/<image_name>")
+def get_image(image_name):
+    
+    try:
+        return send_from_directory(app.config["CLIENT_IMAGES"], filename = image_name
+        ,as_attachment=False)
+    except FileExistsError :
+        abort(404)
+
+@app.route("/cookies")
+def cookies():
+
+    cookies = request.cookies
+    print(cookies.get("Flavour"))
+
+    res = make_response("Cookies", 200)
+    res.set_cookie("Flavour",
+            value =  "Chocolate chip",
+            max_age = 10,
+            expires = None,
+            path = request.path,
+            domain = None,
+            secure = False,
+            httponly = False
+            )
+
+    return res    
