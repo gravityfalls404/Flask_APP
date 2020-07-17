@@ -2,6 +2,7 @@ from app import app
 from flask import render_template, redirect, request, jsonify,make_response
 
 import os
+from flask import session, url_for
 
 from werkzeug.utils import secure_filename
 from flask import send_from_directory, abort
@@ -24,7 +25,7 @@ def signup():
         print(req)
         return redirect(request.url)
 
-    return render_template('/public/templates/sign_up.html')
+    return render_template('/public/sign_up.html')
 
 users = {
     "mitsuhiko": {
@@ -44,15 +45,15 @@ users = {
     }
 }
 
-@app.route("/profile/<username>")
-def profile(username):
+# @app.route("/profile/<username>")
+# def profile(username):
 
-    user = None
+#     user = None
 
-    if username in users:
-        user = users[username]
+#     if username in users:
+#         user = users[username]
 
-    return render_template("public/profile.html", username = username,user  = user)
+#     return render_template("public/profile.html", username = username,user  = user)
 
 @app.route("/multiple/<foo>/<bar>/<baz>")
 def multi(foo, bar, baz):
@@ -192,3 +193,67 @@ def cookies():
             )
 
     return res    
+
+
+app.config["SECRET_KEY"]='BNlSQffPBAZwryFH4mdHAw'
+
+users = {
+    "julian": {
+        "username": "julian",
+        "email": "julian@gmail.com",
+        "password": "example",
+        "bio": "Some guy from the internet"
+    },
+    "clarissa": {
+        "username": "clarissa",
+        "email": "clarissa@icloud.com",
+        "password": "sweetpotato22",
+        "bio": "Sweet potato is life"
+    }
+}
+
+@app.route("/sign-in", methods = ["GET","POST"])
+def sign_in():
+    if request.method=="POST":
+        req = request.form
+
+        username = req.get("username")
+        password = req.get("password")
+        
+        if not username in users:
+            print("Username Not found")
+            return redirect(request.url)
+
+        else:
+            user = users[username]
+
+        if not password==user["password"]:
+            print("Wrong Password")
+            return redirect(request.url)
+
+        else:
+            session['USERNAME'] = user["username"]
+            print("User Added to session")
+            
+            return redirect(url_for("profile"))
+
+
+    return render_template("/public/sign_in.html")
+
+
+@app.route("/profile")
+def profile():
+
+    if session.get('USERNAME', None) is not None:
+        username = session.get("USERNAME")
+        user = users[username]
+        return render_template('/public/profile.html', user= user) 
+    else:
+        print("Username not found in session")
+        return redirect(url_for("sign_in"))
+
+@app.route("/sign-out")
+def sign_out():
+    session.pop("USERNAME",None)
+
+    return redirect(url_for("sign_in"))
