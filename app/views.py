@@ -1,5 +1,5 @@
 from app import app
-from flask import render_template, redirect, request, jsonify,make_response
+from flask import render_template, redirect, request, jsonify,make_response, flash
 
 import os
 from flask import session, url_for
@@ -17,15 +17,15 @@ def index():
 def about():
     return "<h1 style='color: green'><strong>About</strong></h1>"
 
-@app.route("/sign-up" , methods = ['GET','POST'])
-def signup():
-    if request.method == "POST":
-        req = request.form
+# @app.route("/sign-up" , methods = ['GET','POST'])
+# def signup():
+#     if request.method == "POST":
+#         req = request.form
 
-        print(req)
-        return redirect(request.url)
+#         print(req)
+#         return redirect(request.url)
 
-    return render_template('/public/sign_up.html')
+#     return render_template('/public/sign_up.html')
 
 users = {
     "mitsuhiko": {
@@ -257,3 +257,23 @@ def sign_out():
     session.pop("USERNAME",None)
 
     return redirect(url_for("sign_in"))
+
+@app.route("/sign-up", methods = ["POST","GET"])
+def sign_up():
+
+    if request.method == "POST":
+        req = request.form
+
+        username = req.get("username")
+        email = req.get("email")
+        password = req.get("password")
+
+        if not len(password) >=10:
+            flash("Password must be at least 10 char in length", category="danger")
+            return redirect(request.url)
+
+        flash("Account Created",category="success")
+        return redirect(request.url)
+
+
+    return render_template("/public/sign_up.html")
