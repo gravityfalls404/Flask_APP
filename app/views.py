@@ -12,7 +12,7 @@ from flask import send_from_directory, abort
 def index():
     abort(500)
     return render_template("/public/index.html")
-
+    
 @app.route("/about")
 def about():
     return "<h1 style='color: green'><strong>About</strong></h1>"
@@ -277,3 +277,104 @@ def sign_up():
 
 
     return render_template("/public/sign_up.html")
+
+
+stock = {
+    "fruit": {
+        "apple": 30,
+        "banana": 45,
+        "cherry": 1000
+    }
+}
+
+@app.route("/qs")
+def qs():
+    if request.args:
+        req = request.args
+        return " ".join(f"{k}: {v}"for k,v in req.items())
+
+    return "Thanks"
+
+@app.route("/stock")
+def get_stock():
+    res = make_response(jsonify(stock),200)
+
+    return res
+
+
+@app.route("/stock/<collection>")
+def get_collection(collection):
+    if collection in stock:
+        res = make_response(jsonify(stock[collection]),200)
+        return res
+    
+    res = make_response(jsonify({"error": "Item not found"}),200)
+    return res
+
+@app.route("/stock/<collection>/<member>")
+def get_member(collection,member):
+    if collection in stock:
+        member = stock[collection].get(member)
+        if member:
+            res = make_response(jsonify(member),200)
+            return res
+        
+        res = make_response(jsonify({"error": "Unknown member search"}),400)
+        return res
+
+    res = make_response(jsonify({"error":"Member not found"}),400)
+    return res
+
+@app.route("/add-collection", methods=["POST","GET"])
+def add_collection():
+    if request.method == "POST":
+        req = request.form
+
+        collection = req.get("collection")
+        member = req.get("member")
+        qty = req.get("qty")
+
+        if collection in stock:
+            message = "Collection already exist"
+            return render_template("add_collection.html", stock = stock, message = message)
+
+        stock[collection] = {member: qty}
+        message = "Collection created"
+
+        return render_template("add_collection.html", stock = stock, message = message)
+
+    return render_template("add_collection.html", stock=stock)
+
+
+@app.route("/add-collection/<collection>", methods = ["PUT"])
+def put_collection(collection): 
+    
+    
+    req = request.get_json()
+    stock[collection] = req
+
+    res = make_response(jsonify({"message":"Collection updated"}),200)
+
+    return res
+        
+@app.route("/stock/<collection>", methods=["PATCH"])
+def patch_collection(collection):
+
+    """ Updates or creates a collection """
+
+    req = request.get_json()
+
+    if collection in stock:
+        for k, v in req.items():
+            stock[collection][k] = v
+
+        res = make_response(jsonify({"message": "Collection updated"}), 200)
+        return res
+
+    stock[collection] = req
+
+    res = make_response(jsonify({"message": "Collection created"}), 201)
+    return res
+
+
+
