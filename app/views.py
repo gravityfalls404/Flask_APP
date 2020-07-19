@@ -10,7 +10,7 @@ from flask import send_from_directory, abort
 
 @app.route("/")
 def index():
-    print(app.config['DB_NAME'])
+    abort(500)
     return render_template("/public/index.html")
 
 @app.route("/about")
