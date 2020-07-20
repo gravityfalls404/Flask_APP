@@ -9,6 +9,8 @@ def not_found(e)  :
 @app.errorhandler(500)
 def not_found(e)  :
 
-  app.logger.error(f"Server error: {e}, route: {request.url}")
+  # app.logger.error(f"Server error: {e}, route: {request.url}")
+
+  
 
   return render_template("/public/500.html")
