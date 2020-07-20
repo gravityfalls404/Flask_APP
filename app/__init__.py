@@ -15,3 +15,4 @@ from app import views
 from app import  adminViews
 from app import error_handlers
 from app import ex1
+from app import myCalc

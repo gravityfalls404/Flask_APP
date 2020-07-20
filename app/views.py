@@ -376,9 +376,7 @@ def patch_collection(collection):
     res = make_response(jsonify({"message": "Collection created"}), 201)
     return res
 
-@app.route("/tv")
-def tv():
-    return "<h1 style='text-align: center;'>I'm Working on my tv</h1>"
+
 
 
 
