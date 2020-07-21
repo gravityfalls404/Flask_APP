@@ -8,10 +8,10 @@ from werkzeug.utils import secure_filename
 from flask import send_from_directory, abort
 
 
-@app.route("/")
-def index():
+# @app.route("/")
+# def index():
     
-    return render_template("/public/index.html")
+#     return render_template("/public/index.html")
     
 @app.route("/about")
 def about():
